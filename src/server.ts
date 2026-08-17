@@ -2,12 +2,16 @@ import express, { Request, Response } from 'express'
 const app = express();
 const port = 5000;
 
+//parser
+
+app.use(express.json())
+
 app.get('/', (req:Request, res:Response) => {
   res.send('next level web World!');
 });
 
 app.post('/', (req: Request, res: Response) => {
-  console.log(req);
+  console.log(req.body);
 
   res.status(201).json({
     success: true,
