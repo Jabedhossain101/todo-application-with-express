@@ -75,9 +75,23 @@ app.get('/', (req: Request, res: Response) => {
   res.send('I am a next level developer');
 });
 
-app.post('/', (req: Request, res: Response) => {
-  console.log(req.body);
+app.post('/users', async(req: Request, res: Response) => {
+  // console.log(req.body);
+  const { name, email } = req.body;
+  try {
+    const result = await pool.query(`INSERT INTO users(name,email) VALUES($1, $2) RETURNING *`, [name, email])
 
+ res.status(201).json({
+   success: false,
+   message: 'data inserted successfully',
+   data: result.rows[0],
+ });
+  } catch (err:any) {
+    res.status(500).json({
+      success: false,
+      message: err.message
+    })
+  }
   res.status(201).json({
     success: true,
     message: 'Your data is showing on the server',
