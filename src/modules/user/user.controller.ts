@@ -78,12 +78,9 @@ const getSingleUser = async (req: Request, res: Response) => {
 
 /* --------put single user---------- */
 const putSingleUser = async (req: Request, res: Response) => {
-  const { name, email } = req.body;
+  const {name,email } = req.body;
   try {
-    const result = await pool.query(
-      `UPDATE users SET name = $1, email = $2 WHERE id = $3 RETURNING *`,
-      [name, email, req.params.id],
-    );
+    const result = await userServices.putSingleUser(name,email,req.params.id as string );
 
     if (result.rows.length === 0) {
       return res.status(404).json({
@@ -104,6 +101,36 @@ const putSingleUser = async (req: Request, res: Response) => {
     });
   }
 };
+
+/* --------delete single user---------- */
+const deleteSingleUser = async (req: Request, res: Response) => {
+  try {
+    const result = await userServices.deleteSingleUser(req.params.id as string);
+    if (result.rowCount === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'User deleted successfully',
+      data: result.rows[0],
+    });
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+
 export const userController = {
-  createUser,getUser,getSingleUser,putSingleUser
-}
+  createUser,
+  getUser,
+  getSingleUser,
+  putSingleUser,
+  deleteSingleUser,
+};
