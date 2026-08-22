@@ -11,20 +11,10 @@ router.post('/',userController.createUser);
 //app.use('users',userRoutes)
 
 //routes ---> controller ---> service
-router.get('/', async (req: Request, res: Response) => {
-  try {
-    const result = await pool.query(`SELECT * FROM users`);
-    res.status(200).json({
-      success: true,
-      message: 'Users fetched successfully',
-      data: result.rows,
-    });
-  } catch (err: any) {
-    res.status(500).json({
-      success: false,
-      message: err.message,
-    });
-  }
-});
+router.get('/', userController.getUser);
+
+router.get('/:id', userController.getSingleUser);
+
+router.get('/:id',userController.putSingleUser);
 
 export const userRoutes = router;

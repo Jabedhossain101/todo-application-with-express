@@ -2,6 +2,9 @@ import { Request, Response } from "express";
 import { pool } from "../../config/db";
 import { userServices } from "./user.service";
 
+
+/* ---------create user -------- */
+
 const createUser = async (req: Request, res: Response) => {
   const { name, email } = req.body;
 
@@ -28,6 +31,79 @@ const createUser = async (req: Request, res: Response) => {
   }
 };
 
+
+/* ---------get all user -------- */
+const getUser = async (req: Request, res: Response) => {
+  try {
+    const result = await userServices.getUser();
+    res.status(200).json({
+      success: true,
+      message: 'Users fetched successfully',
+      data: result.rows,
+    });
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+
+/* ---------get single user -------- */
+const getSingleUser = async (req: Request, res: Response) => {
+  try {
+    const result = await userServices.getSingleUser(req.params.id as string);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'User data found',
+      data: result.rows[0],
+    });
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+
+/* --------put single user---------- */
+const putSingleUser = async (req: Request, res: Response) => {
+  const { name, email } = req.body;
+  try {
+    const result = await pool.query(
+      `UPDATE users SET name = $1, email = $2 WHERE id = $3 RETURNING *`,
+      [name, email, req.params.id],
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'User data updated successfully',
+      data: result.rows[0],
+    });
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
 export const userController = {
-  createUser
+  createUser,getUser,getSingleUser,putSingleUser
 }
