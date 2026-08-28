@@ -26,7 +26,7 @@ app.use('/users', userRoutes);
 
 
 
-// Todos Routes
+
 app.use('/todos', todosRoutes);
 
 //auth routes
